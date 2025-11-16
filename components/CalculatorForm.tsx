@@ -9,11 +9,11 @@ interface CalculatorFormProps {
 }
 
 const initialFormState: FormData = {
-  initialValue: 1000,
-  monthlyValue: 1000,
-  interestRate: 8,
+  initialValue: 0,
+  monthlyValue: 0,
+  interestRate: 0,
   rateType: RateType.Annual,
-  period: 10,
+  period: 0,
   periodType: PeriodType.Years,
 };
 
