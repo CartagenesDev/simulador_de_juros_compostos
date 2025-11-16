@@ -10,9 +10,9 @@ app.use(cors());
 app.use(express.json());
 
 // Rotas
-app.get('/api/simulations', (req: Request, res: Response) => {
+app.get('/api/simulations', async (req: Request, res: Response) => {
   try {
-    const simulations = getAllSimulations();
+    const simulations = await getAllSimulations();
     res.json(simulations);
   } catch (error) {
     console.error('Erro ao buscar simulações:', error);
@@ -20,10 +20,10 @@ app.get('/api/simulations', (req: Request, res: Response) => {
   }
 });
 
-app.get('/api/simulations/:id', (req: Request, res: Response) => {
+app.get('/api/simulations/:id', async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id);
-    const simulation = getSimulationById(id);
+    const simulation = await getSimulationById(id);
     
     if (!simulation) {
       return res.status(404).json({ error: 'Simulação não encontrada' });
@@ -36,10 +36,10 @@ app.get('/api/simulations/:id', (req: Request, res: Response) => {
   }
 });
 
-app.post('/api/simulations', (req: Request, res: Response) => {
+app.post('/api/simulations', async (req: Request, res: Response) => {
   try {
     const simulation: SimulationRecord = req.body;
-    const id = saveSimulation(simulation);
+    const id = await saveSimulation(simulation);
     res.status(201).json({ id, message: 'Simulação salva com sucesso!' });
   } catch (error) {
     console.error('Erro ao salvar simulação:', error);
@@ -47,10 +47,10 @@ app.post('/api/simulations', (req: Request, res: Response) => {
   }
 });
 
-app.delete('/api/simulations/:id', (req: Request, res: Response) => {
+app.delete('/api/simulations/:id', async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id);
-    deleteSimulation(id);
+    await deleteSimulation(id);
     res.json({ message: 'Simulação deletada com sucesso!' });
   } catch (error) {
     console.error('Erro ao deletar simulação:', error);
