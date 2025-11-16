@@ -6,25 +6,47 @@ import InfoSection from './components/InfoSection';
 import { type FormData, type CalculationResult } from './types';
 import useCompoundInterest from './hooks/useCompoundInterest';
 import Header from './components/Header';
+import { simulationService } from './services/simulationService';
 
 const App: React.FC = () => {
   const [result, setResult] = useState<CalculationResult | null>(null);
+  const [formData, setFormData] = useState<FormData | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
   const { calculate, error } = useCompoundInterest();
 
   const handleCalculate = (data: FormData) => {
     const calculationResult = calculate(data);
     setResult(calculationResult);
+    setFormData(data);
+    setSaveError(null);
+    setSaveSuccess(null);
   };
 
   const handleClear = () => {
     setResult(null);
+    setFormData(null);
+    setSaveError(null);
+    setSaveSuccess(null);
   }
 
   const handleSaveSimulation = async (resultToSave: CalculationResult) => {
-    // Em uma aplicação real, isso seria uma requisição POST para seu backend.
-    // O backend então lidaria com a autenticação e escrita dos dados no Google Sheets.
-    console.log('Salvando simulação:', resultToSave);
-    alert('Funcionalidade de salvar em breve! Isto enviaria os dados para um backend que os salvaria no Google Sheets.');
+    if (!formData) {
+      setSaveError('Dados do formulário não encontrados');
+      return;
+    }
+
+    try {
+      setSaveError(null);
+      setSaveSuccess(null);
+      const response = await simulationService.save(formData, resultToSave);
+      setSaveSuccess(`✅ Simulação salva com sucesso! ID: ${response.id}`);
+      console.log('Simulação salva:', response);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao salvar simulação';
+      setSaveError(errorMessage);
+      console.error('Erro ao salvar:', err);
+    }
   };
 
   return (
@@ -37,6 +59,15 @@ const App: React.FC = () => {
           {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
               <strong className="font-bold">Erro!</strong>
               <span className="block sm:inline"> {error}</span>
+            </div>}
+
+          {saveError && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+              <strong className="font-bold">Erro ao salvar!</strong>
+              <span className="block sm:inline"> {saveError}</span>
+            </div>}
+
+          {saveSuccess && <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+              <span className="block sm:inline">{saveSuccess}</span>
             </div>}
             
           {result && <ResultsDisplay result={result} onSave={handleSaveSimulation} />}
