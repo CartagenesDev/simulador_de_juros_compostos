@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import CalculatorForm from './components/CalculatorForm';
 import ResultsDisplay from './components/ResultsDisplay';

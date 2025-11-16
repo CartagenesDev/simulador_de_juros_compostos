@@ -1,6 +1,10 @@
 import { type CalculationResult, type FormData } from '../types';
 
-const API_URL = '/api/simulations';
+// URL base da API
+// Na Vercel em produção, usa a mesma URL (API routes)
+// Em desenvolvimento local, usa http://localhost:3001
+const BASE_URL = import.meta.env.VITE_API_URL || '';
+const API_URL = BASE_URL ? `${BASE_URL}/api/simulations` : '/api/simulations';
 
 export interface SavedSimulation {
   id?: number;
